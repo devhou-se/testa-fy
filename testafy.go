@@ -67,8 +67,13 @@ func applyPatterns(word string) string {
 	}
 
 	// if a word starts with "in" and is longer than 6 letters:
-	if strings.HasPrefix(word, "in") && len(word) > 4 {
+	if strings.HasPrefix(word, "in") && len(word) > 6 {
 		return "damian" + word[2:]
+	}
+
+	// if a word starts with "man" and is longer than 7 letters:
+	if strings.HasPrefix(word, "man") && len(word) > 7 {
+		return "damian" + word[3:]
 	}
 
 	switch {
