@@ -23,7 +23,7 @@
   - `-ess` → `-essta`  
   - `-ster` → `-sta`
 
-- **Randomization**: each candidate word is transformed with probability `transformProb` (default 0.7).
+- **Randomisation**: each candidate word is transformed with probability `transformProb` (default 0.7).
 
 ## Installation
 
