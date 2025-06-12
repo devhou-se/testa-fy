@@ -17,6 +17,7 @@ var specialCases = map[string]string{
 	"action":        "action",
 	"tickle":        "test-tickle",
 	"demonstration": "damianstration",
+	"maniacal":      "damianiacal",
 	"Damian Testa":  "Damian Testa AKA Pooplord 5000",
 }
 
@@ -56,10 +57,20 @@ func Testafy(input string) string {
 }
 
 func applyPatterns(word string) string {
-	// always map "trans..." → "test..."
+	// 1) Always map "trans..." → "test..."
 	if strings.HasPrefix(word, "trans") {
 		return "test" + word[len("trans"):]
 	}
+	// 2) Turn any "en…" word (length > 4) into "damien…"
+	if strings.HasPrefix(word, "en") && len(word) > 4 {
+		return "damien" + word[2:]
+	}
+
+	// if a word starts with "in" and is longer than 6 letters:
+	if strings.HasPrefix(word, "in") && len(word) > 4 {
+		return "damian" + word[2:]
+	}
+
 	switch {
 	case strings.HasSuffix(word, "ction"):
 		return strings.TrimSuffix(word, "ction") + "ctestation"
@@ -78,7 +89,7 @@ func applyPatterns(word string) string {
 	case strings.HasSuffix(word, "ame"):
 		return strings.TrimSuffix(word, "ame") + "amian"
 	case strings.HasSuffix(word, "ess"):
-		return strings.TrimSuffix(word, "ess") + "essta"
+		return strings.TrimSuffix(word, "ess") + "esta"
 	case strings.HasSuffix(word, "ster"):
 		return strings.TrimSuffix(word, "ster") + "sta"
 	}
