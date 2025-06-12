@@ -1,8 +1,14 @@
 package main
 
 import (
+	"math/rand"
 	"strings"
+	"time"
 )
+
+var rng = rand.New(rand.NewSource(time.Now().UnixNano()))
+
+const transformProb = 0.7 // 70% chance to apply each individual transformation
 
 var ignoreWords = map[string]struct{}{
 	"i": {}, "am": {}, "i'm": {}, "me": {}, "be": {}, "see": {}, "run": {},
@@ -14,15 +20,15 @@ var ignoreWords = map[string]struct{}{
 // only true exceptions left here
 var specialCases = map[string]string{
 	"authenticity":  "authentestity",
-	"action":        "action",
+	"action":        "action", //manual override to keep this word unaffected by pattern rules
 	"tickle":        "test-tickle",
 	"demonstration": "damianstration",
 	"maniacal":      "damianiacal",
-	"Damian Testa":  "Damian Testa AKA Pooplord 5000",
+	// phrase override below handled in Testafy()
 }
 
 func Testafy(input string) string {
-	// phrase-level override
+	// phrase-level override (always applied)
 	input = strings.Replace(
 		input,
 		"Damian Testa",
@@ -31,7 +37,6 @@ func Testafy(input string) string {
 	)
 
 	words := strings.Fields(input)
-
 	for i, word := range words {
 		prefix, base, suffix := stripPunctuation(word)
 		lower := strings.ToLower(base)
@@ -40,15 +45,17 @@ func Testafy(input string) string {
 			continue
 		}
 
-		// explicit overrides first
+		// 1) explicit overrides first
 		if rep, ok := specialCases[lower]; ok {
-			words[i] = prefix + matchCase(base, rep) + suffix
+			if rng.Float64() <= transformProb {
+				words[i] = prefix + matchCase(base, rep) + suffix
+			}
 			continue
 		}
 
-		// pattern-based fallbacks
+		// 2) pattern-based fallbacks
 		modified := applyPatterns(lower)
-		if modified != lower {
+		if modified != lower && rng.Float64() <= transformProb {
 			words[i] = prefix + matchCase(base, modified) + suffix
 		}
 	}
@@ -57,25 +64,21 @@ func Testafy(input string) string {
 }
 
 func applyPatterns(word string) string {
-	// 1) Always map "trans..." → "test..."
+	// prefix rules
 	if strings.HasPrefix(word, "trans") {
 		return "test" + word[len("trans"):]
 	}
-	// 2) Turn any "en…" word (length > 4) into "damien…"
 	if strings.HasPrefix(word, "en") && len(word) > 4 {
 		return "damien" + word[2:]
 	}
-
-	// if a word starts with "in" and is longer than 6 letters:
 	if strings.HasPrefix(word, "in") && len(word) > 6 {
 		return "damian" + word[2:]
 	}
-
-	// if a word starts with "man" and is longer than 7 letters:
 	if strings.HasPrefix(word, "man") && len(word) > 7 {
 		return "damian" + word[3:]
 	}
 
+	// suffix rules
 	switch {
 	case strings.HasSuffix(word, "ction"):
 		return strings.TrimSuffix(word, "ction") + "ctestation"
