@@ -89,7 +89,7 @@ func applyPatterns(word string) string {
 	case strings.HasSuffix(word, "ame"):
 		return strings.TrimSuffix(word, "ame") + "amian"
 	case strings.HasSuffix(word, "ess"):
-		return strings.TrimSuffix(word, "ess") + "esta"
+		return strings.TrimSuffix(word, "ess") + "essta"
 	case strings.HasSuffix(word, "ster"):
 		return strings.TrimSuffix(word, "ster") + "sta"
 	}
