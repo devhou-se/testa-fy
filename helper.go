@@ -9,7 +9,7 @@ func matchCase(original, replacement string) string {
 	if isUpper(original) {
 		return strings.ToUpper(replacement)
 	}
-	if isCapitalized(original) {
+	if isCapitalised(original) {
 		return strings.Title(replacement)
 	}
 	return replacement
@@ -19,7 +19,7 @@ func isUpper(s string) bool {
 	return strings.ToUpper(s) == s
 }
 
-func isCapitalized(word string) bool {
+func isCapitalised(word string) bool {
 	if len(word) == 0 {
 		return false
 	}
