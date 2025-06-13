@@ -1,20 +1,17 @@
 package main
 
 import (
-	"math/rand"
+	"math/rand/v2"
+	"slices"
 	"strings"
-	"time"
 )
-
-var rng = rand.New(rand.NewSource(time.Now().UnixNano()))
 
 const transformProb = 0.7 // 70% chance to apply each individual transformation
 
-var ignoreWords = map[string]struct{}{
-	"i": {}, "am": {}, "i'm": {}, "me": {}, "be": {}, "see": {}, "run": {},
-	"and": {}, "or": {}, "the": {}, "a": {}, "an": {}, "to": {}, "in": {}, "on": {}, "also": {},
-	"that": {}, "is": {}, "it": {}, "of": {}, "by": {}, "we": {}, "are": {}, "were": {},
-	"he": {}, "she": {}, "at": {}, "if": {}, "so": {}, "do": {}, "but": {}, "you": {}, "my": {},
+var ignoreWords = []string{
+	"i", "am", "i'm", "me", "be", "see", "run", "and", "or", "the", "a", "an",
+	"to", "in", "on", "also", "that", "is", "it", "of", "by", "we", "are",
+	"were", "he", "she", "at", "if", "so", "do", "but", "you", "my",
 }
 
 // only true exceptions left here
@@ -29,11 +26,10 @@ var specialCases = map[string]string{
 
 func Testafy(input string) string {
 	// phrase-level override (always applied)
-	input = strings.Replace(
+	input = strings.ReplaceAll(
 		input,
 		"Damian Testa",
 		"Damian Testa AKA Pooplord 5000",
-		-1,
 	)
 
 	words := strings.Fields(input)
@@ -41,13 +37,13 @@ func Testafy(input string) string {
 		prefix, base, suffix := stripPunctuation(word)
 		lower := strings.ToLower(base)
 
-		if _, skip := ignoreWords[lower]; skip || len(lower) < 4 {
+		if slices.Contains(ignoreWords, lower) || len(lower) < 4 {
 			continue
 		}
 
 		// 1) explicit overrides first
 		if rep, ok := specialCases[lower]; ok {
-			if rng.Float64() <= transformProb {
+			if rand.Float64() <= transformProb {
 				words[i] = prefix + matchCase(base, rep) + suffix
 			}
 			continue
@@ -55,7 +51,7 @@ func Testafy(input string) string {
 
 		// 2) pattern-based fallbacks
 		modified := applyPatterns(lower)
-		if modified != lower && rng.Float64() <= transformProb {
+		if modified != lower && rand.Float64() <= transformProb {
 			words[i] = prefix + matchCase(base, modified) + suffix
 		}
 	}
